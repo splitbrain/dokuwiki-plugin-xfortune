@@ -18,7 +18,7 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
         return array(
             'author' => 'Andreas Gohr',
             'email'  => 'andi@splitbrain.org',
-            'date'   => '2005-11-18',
+            'date'   => '2008-01-24',
             'name'   => 'Fortune Plugin',
             'desc'   => 'Displays random fortune cookies using AJAX requests',
             'url'    => 'http://wiki.splitbrain.org/plugin:gallery',
