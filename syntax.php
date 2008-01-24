@@ -143,6 +143,9 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
         }
         fclose($fd);
 
+        // if it is not valid UTF-8 assume it's latin1
+        if(!utf8_check($StringTemp)) return utf8_encode($StringTemp);
+
         return $StringTemp;
     }
 }
