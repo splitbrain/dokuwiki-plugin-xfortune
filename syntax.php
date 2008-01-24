@@ -121,7 +121,7 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
         $numRandom = mt_rand(0,$dimFile);
 
         $fd = fopen($file, 'r');
-        if (!$fd) return 'ERROR: reading cookie file failed';
+        if (!$fd) return "ERROR: reading cookie file $file failed";
 
         // jump to random place in file
         fseek($fd, $numRandom);
