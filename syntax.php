@@ -18,7 +18,7 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
         return array(
             'author' => 'Andreas Gohr',
             'email'  => 'andi@splitbrain.org',
-            'date'   => '2008-01-24',
+            'date'   => '2008-01-25',
             'name'   => 'Fortune Plugin',
             'desc'   => 'Displays random fortune cookies using AJAX requests',
             'url'    => 'http://wiki.splitbrain.org/plugin:gallery',
@@ -106,47 +106,81 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
     /**
      * Returns one random cookie
      *
-     * Uses code from phpmyxfortune.php by Robbie B.
-     *
-     * @author Robbie B.
      * @author Andreas Gohr <andi@splitbrain.org>
-     * @link   http://freshmeat.net/projects/phpmyxfortune/
      */
     function _getCookie($cookie){
         $file = mediaFN($cookie);
         if(!@file_exists($file)) return 'ERROR: cookie file not found';
 
-        $dimFile = filesize($file);
+        $dim = filesize($file);
+        if($dim < 2) return "ERROR: invalid cookie file $file";
         mt_srand( (double) microtime() * 1000000);
-        $numRandom = mt_rand(0,$dimFile);
+        $rnd = mt_rand(0,$dim);
 
         $fd = fopen($file, 'r');
         if (!$fd) return "ERROR: reading cookie file $file failed";
 
         // jump to random place in file
-        fseek($fd, $numRandom);
+        fseek($fd, $rnd);
 
-        // seek cookie start
-        $Character  = '';
-        $StringTemp = '';
-        while (strcmp($Character,"%\n")!=0 && !feof($fd)){
-            $Character = fgets($fd, 1024);
-        }
-        if (feof($fd)) fseek($fd,0);
+        $text   = '';
+        $line   = '';
+        $cookie = false;
+        $test   = 0;
+        while(true){
+            $seek = ftell($fd);
+            $line = fgets($fd, 1024);
 
-        // read cookie
-        $Character = '';
-        $Character = fgets($fd, 1024);
-        while (strcmp($Character,"%\n")!=0 && !feof($fd)) {
-            $StringTemp .= htmlspecialchars($Character).'<br />';
-            $Character   = fgets($fd, 1024);
+            if($seek == 0){
+                // start of file always starts a cookie
+                $cookie = true;
+                if($line == "%\n"){
+                    // ignore delimiter if exists
+                    continue;
+                }else{
+                    // part of the cookie
+                    $text .= htmlspecialchars($line).'<br />';
+                    continue;
+                }
+            }
+
+            if(feof($fd)){
+                if($cookie){
+                    // we had a cookie already, stop here
+                    break;
+                }else{
+                    // no cookie yet, wrap around
+                    fseek($fd,0);
+                    continue;
+                }
+            }
+
+            if($line == "%\n"){
+                if($cookie){
+                    // we had a cookie already, stop here
+                    break;
+                }elseif($seek == $dim -2){
+                    // it's the end of file delimiter, wrap around
+                    fseek($fd,0);
+                    continue;
+                }else{
+                    // start of the cookie
+                    $cookie = true;
+                    continue;
+                }
+            }
+
+            // part of the cookie?
+            if($cookie){
+                $text .= htmlspecialchars($line).'<br />';
+            }
         }
         fclose($fd);
 
         // if it is not valid UTF-8 assume it's latin1
-        if(!utf8_check($StringTemp)) return utf8_encode($StringTemp);
+        if(!utf8_check($text)) return utf8_encode($text);
 
-        return $StringTemp;
+        return $text;
     }
 }
 
