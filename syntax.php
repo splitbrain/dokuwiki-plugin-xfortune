@@ -132,12 +132,12 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
         while (strcmp($Character,"%\n")!=0 && !feof($fd)){
             $Character = fgets($fd, 1024);
         }
-        if (feof($fd)) fseek($fd,1);
+        if (feof($fd)) fseek($fd,0);
 
         // read cookie
         $Character = '';
         $Character = fgets($fd, 1024);
-        while (strcmp($Character,"%\n")!=0 ) {
+        while (strcmp($Character,"%\n")!=0 && !feof($fd)) {
             $StringTemp .= htmlspecialchars($Character).'<br />';
             $Character   = fgets($fd, 1024);
         }
