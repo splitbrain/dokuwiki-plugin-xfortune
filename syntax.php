@@ -11,19 +11,6 @@ if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 require_once(DOKU_PLUGIN.'syntax.php');
 
 class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
-    /**
-     * return some info
-     */
-    function getInfo(){
-        return array(
-            'author' => 'Andreas Gohr',
-            'email'  => 'andi@splitbrain.org',
-            'date'   => '2008-01-25',
-            'name'   => 'Fortune Plugin',
-            'desc'   => 'Displays random fortune cookies using AJAX requests',
-            'url'    => 'http://wiki.splitbrain.org/plugin:gallery',
-        );
-    }
 
     /**
      * What kind of syntax are we?
