@@ -82,6 +82,7 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
     }
 
     function _script($cookie,$time){
+die('la');
         $str  = '<script type="text/javascript" language="javascript">';
         $str .= 'var plugin_xfortune_time = '.($time*1000).';';
         $str .= 'var plugin_xfortune_cookie = \''.$cookie."';";
@@ -96,6 +97,7 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
      * @author Andreas Gohr <andi@splitbrain.org>
      */
     function _getCookie($cookie){
+        return 'oui';
         $file = mediaFN($cookie);
         if(!@file_exists($file)) return 'ERROR: cookie file not found';
 
