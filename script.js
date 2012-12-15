@@ -34,5 +34,5 @@ function plugin_xfortune(){
         window.setTimeout("plugin_xfortune()",plugin_xfortune_time);
     };
 
-    ajax.runAJAX('cookie='+encodeURI(plugin_xfortune_cookie));
+    ajax.runAJAX('cookie='+encodeURI(plugin_xfortune_cookie)+'&type='+encodeURI(plugin_xfortune_type));
 }
