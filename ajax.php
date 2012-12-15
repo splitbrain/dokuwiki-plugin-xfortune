@@ -22,6 +22,7 @@ require_once(DOKU_PLUGIN.'xfortune/syntax.php');
 
 header('Content-Type: text/html; charset=utf-8');
 $cookie = cleanID($_POST['cookie']);
-print syntax_plugin_xfortune::_getCookie($cookie);
+$type = ($_POST['type'] == 'wiki') ? 'wiki' : 'media';
+print syntax_plugin_xfortune::_getCookie($cookie, $type);
 
 ?>

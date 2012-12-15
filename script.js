@@ -17,8 +17,8 @@ function plugin_xfortune(){
 
     // We use SACK to do the AJAX requests
     var ajax = new sack(DOKU_BASE+'lib/plugins/xfortune/ajax.php');
-    ajax_qsearch.sack.AjaxFailedAlert = '';
-    ajax_qsearch.sack.encodeURIString = false;
+    ajax.AjaxFailedAlert = '';
+    ajax.encodeURIString = false;
 
     // define callback
     ajax.onCompletion = function(){
@@ -34,5 +34,5 @@ function plugin_xfortune(){
         window.setTimeout("plugin_xfortune()",plugin_xfortune_time);
     };
 
-    ajax.runAJAX('cookie='+encodeURI(plugin_xfortune_cookie));
+    ajax.runAJAX('cookie='+encodeURI(plugin_xfortune_cookie)+'&type='+encodeURI(plugin_xfortune_type));
 }

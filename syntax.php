@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Display Fortune cookies
  *
@@ -47,20 +48,27 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
     function handle($match, $state, $pos, &$handler){
         $match = substr($match,11,-2); //strip markup from start and end
 
-        $data = array();
-
         //handle params
         list($cookie,$params) = explode('?',$match,2);
 
         //xfortune cookie file
-        $data['cookie'] = cleanID($cookie);
+        $data = array(
+            'cookie' => cleanID($cookie),
+            'time' => 30,
+            'page_type' => 'media',
+        );
+
+        list($time, $more) = explode(' ', $params, 2);
 
         //time interval for changing cookies
-        if(preg_match('/\b(\d+)\b/i',$params,$match)){
+        if(preg_match('/\b(\d+)\b/i',$time,$match)){
             $data['time'] = $match[1];
-        }else{
-            $data['time'] = 30;
         }
+
+        if(preg_match('/\bwiki\b/i',$more,$match)){
+            $data['type'] = 'wiki';
+        }
+
         //no hammering please!
         if($data['time'] < 5) $data['time'] = 5;
 
@@ -73,17 +81,18 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
     function render($mode, &$renderer, $data) {
         if($mode == 'xhtml'){
             $renderer->doc .= '<div id="plugin_xfortune">';
-            $renderer->doc .= $this->_getCookie($data['cookie']);
+            $renderer->doc .= $this->_getCookie($data['cookie'], $data['type']);
             $renderer->doc .= '</div>';
-            $renderer->doc .= $this->_script($data['cookie'],$data['time']);
+            $renderer->doc .= $this->_script($data['cookie'],$data['time'],$data['type']);
             return true;
         }
         return false;
     }
 
-    function _script($cookie,$time){
+    function _script($cookie,$time,$type){
         $str  = '<script type="text/javascript" language="javascript">';
         $str .= 'var plugin_xfortune_time = '.($time*1000).';';
+        $str .= 'var plugin_xfortune_type = \''.$type.'\';';
         $str .= 'var plugin_xfortune_cookie = \''.$cookie."';";
         $str .= "addEvent(window,'load',plugin_xfortune);";
         $str .= '</script>';
@@ -91,13 +100,32 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
     }
 
     /**
+     * Returns one random cookie from a wiki page
+     *
+     * @author Franck Brignoli <fbrignoli@gmail.com>
+     */
+    function _getCookieFromWiki($cookie){
+        $file = wikiFN($cookie);
+        if(!@file_exists($file)) return 'ERROR: cookie file not found ('.$file.')';
+
+        $content = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $dim = count($content);
+        
+        mt_srand( (double) microtime() * 1000000);
+        $rnd = mt_rand(0, $dim - 1);
+        $cookie = str_replace('  * ', '', $content[$rnd]);
+
+        return $cookie;
+    }
+
+    /**
      * Returns one random cookie
      *
      * @author Andreas Gohr <andi@splitbrain.org>
      */
-    function _getCookie($cookie){
+    function _getCookieFromMedia($cookie){
         $file = mediaFN($cookie);
-        if(!@file_exists($file)) return 'ERROR: cookie file not found';
+        if(!@file_exists($file)) return 'ERROR: cookie file not found ('.$file.')';
 
         $dim = filesize($file);
         if($dim < 2) return "ERROR: invalid cookie file $file";
@@ -168,6 +196,19 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
         if(!utf8_check($text)) return utf8_encode($text);
 
         return $text;
+    }
+
+    /**
+     * Returns one random cookie
+     *
+     * @author Franck Brignoli <fbrignoli@gmail.com>
+     */
+    function _getCookie($cookie, $type){      
+        if ($type == 'wiki'){
+            return self::_getCookieFromWiki($cookie);
+        }else{
+            return self::_getCookieFromMedia($cookie);
+        }
     }
 }
 
