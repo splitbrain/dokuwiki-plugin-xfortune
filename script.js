@@ -6,33 +6,23 @@
  * @author Andreas Gohr <andi@splitbrain.org>
  */
 
-function plugin_xfortune(){
-    if(!document.getElementById){
-        return;
-    }
-    var obj = document.getElementById('plugin_xfortune');
-    if(obj === null){
+function plugin_xfortune() {
+    if (jQuery('#plugin_xfortune').length === 0) {
         return;
     }
 
-    // We use SACK to do the AJAX requests
-    var ajax = new sack(DOKU_BASE+'lib/plugins/xfortune/ajax.php');
-    ajax_qsearch.sack.AjaxFailedAlert = '';
-    ajax_qsearch.sack.encodeURIString = false;
+    jQuery.post(
+        DOKU_BASE + 'lib/plugins/xfortune/ajax.php',
+        { cookie: encodeURI(plugin_xfortune_cookie) },
+        function (data) {
+            if (data === '') { 
+                return; 
+            }
 
-    // define callback
-    ajax.onCompletion = function(){
-        var data = this.response;
-        if(data === ''){ return; }
-        var out = document.getElementById('plugin_xfortune');
+            jQuery('#plugin_xfortune').html(data);
 
-        out.style.visibility = 'hidden';
-        out.innerHTML = data;
-        out.style.visibility = 'visible';
-
-        // restart timer
-        window.setTimeout("plugin_xfortune()",plugin_xfortune_time);
-    };
-
-    ajax.runAJAX('cookie='+encodeURI(plugin_xfortune_cookie));
+            // restart timer
+            window.setTimeout("plugin_xfortune()", plugin_xfortune_time);
+        }
+    );
 }
