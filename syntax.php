@@ -85,7 +85,7 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
         $str  = '<script type="text/javascript" language="javascript">';
         $str .= 'var plugin_xfortune_time = '.($time*1000).';';
         $str .= 'var plugin_xfortune_cookie = \''.$cookie."';";
-        $str .= "addEvent(window,'load',plugin_xfortune);";
+        $str .= "jQuery('#plugin_xfortune').bind('load', plugin_xfortune());";
         $str .= '</script>';
         return $str;
     }
