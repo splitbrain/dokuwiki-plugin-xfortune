@@ -44,7 +44,7 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
     /**
      * Handle the match
      */
-    function handle($match, $state, $pos, &$handler){
+    function handle($match, $state, $pos, Doku_Handler $handler){
         $match = substr($match,11,-2); //strip markup from start and end
 
         $data = array();
@@ -70,7 +70,7 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    function render($mode, &$renderer, $data) {
+    function render($mode, Doku_Renderer $renderer, $data) {
         if($mode == 'xhtml'){
             $renderer->doc .= '<div id="plugin_xfortune">';
             $renderer->doc .= $this->_getCookie($data['cookie']);
