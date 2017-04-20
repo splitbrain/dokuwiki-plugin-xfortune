@@ -1,8 +1,5 @@
-div#plugin_xfortune{
-  height: 120px;
-  padding: 0.5em;
-  margin: 1em;
-  text-align: right;
-  font-style: italic;
-  overflow: auto;
+div.plugin_xfortune {
+    margin: 1em 0;
+    text-align: right;
+    font-style: italic;
 }

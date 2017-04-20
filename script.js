@@ -6,23 +6,24 @@
  * @author Andreas Gohr <andi@splitbrain.org>
  */
 
-function plugin_xfortune() {
-    if (jQuery('#plugin_xfortune').length === 0) {
-        return;
-    }
+jQuery(function () {
+    jQuery('div.plugin_xfortune').each(function () {
+        var $self = jQuery(this);
+        if(!$self.data('time')) return;
+        if(!$self.data('cookie')) return;
 
-    jQuery.post(
-        DOKU_BASE + 'lib/plugins/xfortune/ajax.php',
-        { cookie: encodeURI(plugin_xfortune_cookie) },
-        function (data) {
-            if (data === '') { 
-                return; 
-            }
+        window.setInterval(function () {
+            jQuery.post(
+                DOKU_BASE + 'lib/exe/ajax.php',
+                {
+                    call: 'plugin_xfortune',
+                    cookie: $self.data('cookie')
+                },
+                function (data) {
+                    $self.html(data)
+                }
+            )
+        }, $self.data('time') * 1000);
+    });
+});
 
-            jQuery('#plugin_xfortune').html(data);
-
-            // restart timer
-            window.setTimeout("plugin_xfortune()", plugin_xfortune_time);
-        }
-    );
-}
