@@ -1,7 +1,7 @@
 base   xfortune
 author Andreas Gohr
 email  andi@splitbrain.org
-date   2016-02-03
+date   2017-04-20
 name   Fortune Plugin
 desc   Displays random fortune cookies using AJAX requests
 url    http://www.dokuwiki.org/plugin:xfortune
