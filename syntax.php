@@ -1,4 +1,7 @@
 <?php
+
+use dokuwiki\Extension\SyntaxPlugin;
+
 /**
  * Display Fortune cookies
  *
@@ -7,58 +10,63 @@
  */
 
 
-class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
-
+class syntax_plugin_xfortune extends SyntaxPlugin
+{
     /**
      * What kind of syntax are we?
      */
-    function getType() {
+    public function getType()
+    {
         return 'substition';
     }
 
     /**
      * What about paragraphs?
      */
-    function getPType() {
+    public function getPType()
+    {
         return 'block';
     }
 
     /**
      * Where to sort in?
      */
-    function getSort() {
+    public function getSort()
+    {
         return 302;
     }
 
     /**
      * Connect pattern to lexer
      */
-    function connectTo($mode) {
+    public function connectTo($mode)
+    {
         $this->Lexer->addSpecialPattern('\{\{xfortune>[^}]*\}\}', $mode, 'plugin_xfortune');
     }
 
     /**
      * Handle the match
      */
-    function handle($match, $state, $pos, Doku_Handler $handler) {
+    public function handle($match, $state, $pos, Doku_Handler $handler)
+    {
         $match = substr($match, 11, -2); //strip markup from start and end
 
-        $data = array();
+        $data = [];
 
         //handle params
-        list($cookie, $params) = explode('?', $match, 2);
+        [$cookie, $params] = explode('?', $match, 2);
 
         //xfortune cookie file
         $data['cookie'] = cleanID($cookie);
 
         //time interval for changing cookies
         $data['time'] = 30;
-        if(preg_match('/\b(\d+)\b/i', $params, $match)) {
+        if (preg_match('/\b(\d+)\b/i', $params, $match)) {
             $data['time'] = (int) $match[1];
         }
 
         //no hammering please!
-        if($data['time'] < 5) $data['time'] = 5;
+        if ($data['time'] < 5) $data['time'] = 5;
 
         return $data;
     }
@@ -66,14 +74,11 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    function render($mode, Doku_Renderer $renderer, $data) {
-        if($mode != 'xhtml') return false;
+    public function render($mode, Doku_Renderer $renderer, $data)
+    {
+        if ($mode != 'xhtml') return false;
 
-        $attr = array(
-            'class' => 'plugin_xfortune',
-            'data-time' => $data['time'],
-            'data-cookie' => $data['cookie']
-        );
+        $attr = ['class' => 'plugin_xfortune', 'data-time' => $data['time'], 'data-cookie' => $data['cookie']];
 
         $renderer->doc .= '<div ' . buildAttributes($attr) . '>';
         $renderer->doc .= helper_plugin_xfortune::getCookieHTML($data['cookie']);
@@ -81,7 +86,6 @@ class syntax_plugin_xfortune extends DokuWiki_Syntax_Plugin {
 
         return true;
     }
-
 }
 
 //Setup VIM: ex: et ts=4 enc=utf-8 :
